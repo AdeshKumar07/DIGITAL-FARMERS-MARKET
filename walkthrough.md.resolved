@@ -1,0 +1,93 @@
+# Digital Farmers Market — Walkthrough
+
+## What Was Built
+
+A full-stack **FarmConnect** platform — a Digital Farmers Market where farmers list produce (direct sale or auction) and consumers browse, bid, and buy.
+
+---
+
+## Architecture
+
+```
+Digital-Farmers-Market/
+├── backend/
+│   ├── config/db.js              — Mongoose connection
+│   ├── models/                   — User, Product, Bid, Order
+│   ├── controllers/              — auth, product, bid, order, admin
+│   ├── routes/                   — 5 route files
+│   ├── middleware/               — auth.js, errorHandler.js, upload.js
+│   └── server.js                 — Express entry point
+└── frontend/
+    └── src/
+        ├── api/axios.js          — JWT interceptor
+        ├── context/AuthContext.jsx
+        ├── components/common/    — Navbar, CursorGlow
+        └── pages/                — 8 pages
+```
+
+## Backend Verification
+
+| Endpoint | Status |
+|---|---|
+| `GET /api/health` | ✅ `{"status":"ok","message":"Digital Farmers Market API running 🌾"}` |
+| `POST /api/auth/register` | ✅ 201 with approval message |
+| `POST /api/auth/login` | ✅ Returns JWT + user object |
+| `GET /api/products` | ✅ Filterable product list |
+| `POST /api/bids` | ✅ Min-increment bid validation |
+| `POST /api/orders/direct` | ✅ Creates order, reduces stock |
+
+## Frontend Pages
+
+| Page | Status |
+|---|---|
+| Home | ✅ Hero, stats, categories, features, CTA |
+| Login | ✅ Glassmorphism card, JWT login |
+| Register | ✅ Role selector, approval notice |
+| Marketplace | ✅ Category + price + type + location filters |
+| ProductDetail | ✅ Live bid panel (5s refresh) + direct buy |
+| FarmerDashboard | ✅ Modal product add + earnings + orders |
+| ConsumerDashboard | ✅ Orders + my bids with status |
+| AdminDashboard | ✅ Pending approval tab + all users |
+
+## Premium UI Features Implemented
+
+- ✅ Glassmorphism cards with `backdrop-filter: blur(20px)`
+- ✅ Floating frosted-glass navbar (top-centered, rounded)
+- ✅ Framer Motion page transitions + card hover animations
+- ✅ Mouse cursor glow (radial green gradient follows cursor)
+- ✅ Gradient backgrounds (emerald-teal, CSS `radial-gradient`)
+- ✅ Skeleton loader shimmer effect on data fetches  
+- ✅ Toast notifications (styled with glass look via react-hot-toast)
+- ✅ Animated modals with `AnimatePresence` + spring physics
+- ✅ Live bid auto-refresh every 5 seconds (simulated real-time)
+- ✅ Mobile responsive grid (3→2→1 col breakpoints)
+- ✅ Google Fonts — Inter + Plus Jakarta Sans
+
+## Browser Recording
+
+![FarmConnect verification walkthrough](C:/Users/ADESH KUMAR/.gemini/antigravity/brain/4ef5880e-09f4-4a8a-9691-1d0529ce325e/farmconnect_verification_1772363930225.webp)
+
+## Predefined Admin (Creator)
+- **Email:** `adeshak0707@gmail.com`
+- **Password:** `Adesh@8881`
+- **Features:** This account bypasses standard approval and has full control over users and products.
+
+## Admin Moderation Features
+- ✅ **User Management:** Approve/Disapprove users, promote farmers to Admin, and remove users permanently.
+- ✅ **Product Moderation:** New products appear in "Reviewing" status. Admins must approve them before they go live.
+- ✅ **Status Tracking:** Farmers see "Live", "Reviewing", or "Rejected" status on their dashboard.
+- ✅ **Platform Stats:** Real-time tracking of revenue, user counts, and moderation queues.
+
+## Running the Project
+
+```bash
+# Backend (Terminal 1)
+cd Digital-Farmers-Market/backend
+npm run dev        # → http://localhost:5000
+
+# Frontend (Terminal 2)
+cd Digital-Farmers-Market/frontend
+npm run dev        # → http://localhost:5173
+```
+
+> **Note:** Make sure MongoDB is running locally (`mongod`) before starting the backend. The database `digital_farmers_market` is auto-created on first connect.
