@@ -151,7 +151,7 @@ export default function FarmerDashboard() {
                 bidsData[p._id] = data;
             }));
             setBidsMap(bidsData);
-        } catch (e) {
+        } catch {
             toast.error('Failed to load data');
         } finally {
             setLoading(false);
@@ -166,7 +166,7 @@ export default function FarmerDashboard() {
             await api.delete(`/products/${id}`);
             toast.success('Product removed');
             fetchAll();
-        } catch (e) {
+        } catch {
             toast.error('Failed to delete');
         }
     };
@@ -178,7 +178,7 @@ export default function FarmerDashboard() {
             await api.put(`/orders/${orderId}/status`, { status });
             toast.success(`Order ${status}`);
             fetchAll();
-        } catch (e) {
+        } catch {
             toast.error('Failed to update order');
         }
     };

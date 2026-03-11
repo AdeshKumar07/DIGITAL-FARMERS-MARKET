@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import api, { getServerUrl } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -18,26 +18,27 @@ export default function ProductDetail() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const [pRes, bRes, hRes] = await Promise.all([
-                api.get(`/products/${id}`),
-                api.get(`/bids/${id}`),
-                api.get(`/bids/${id}/highest`),
-            ]);
-            setProduct(pRes.data);
-            setBids(bRes.data);
-            setHighest(hRes.data);
-        } catch (e) {
-            toast.error('Product not found');
-            navigate('/marketplace');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => { fetchData(); }, [id]);
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const [pRes, bRes, hRes] = await Promise.all([
+                    api.get(`/products/${id}`),
+                    api.get(`/bids/${id}`),
+                    api.get(`/bids/${id}/highest`),
+                ]);
+                setProduct(pRes.data);
+                setBids(bRes.data);
+                setHighest(hRes.data);
+            } catch {
+                toast.error('Product not found');
+                navigate('/marketplace');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [id, navigate]);
 
     // Live bid polling
     useEffect(() => {
@@ -57,7 +58,15 @@ export default function ProductDetail() {
             await api.post('/bids', { productId: id, amount: Number(bidAmount) });
             toast.success('Bid placed successfully! 🎉');
             setBidAmount('');
-            fetchData();
+            // Refresh bid data
+            const [pRes, bRes, hRes] = await Promise.all([
+                api.get(`/products/${id}`),
+                api.get(`/bids/${id}`),
+                api.get(`/bids/${id}/highest`),
+            ]);
+            setProduct(pRes.data);
+            setBids(bRes.data);
+            setHighest(hRes.data);
         } catch (e) {
             toast.error(e.response?.data?.message || 'Bid failed');
         } finally {

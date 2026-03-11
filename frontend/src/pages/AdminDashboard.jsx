@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import api, { getServerUrl } from '../api/axios';
-import { useAuth } from '../context/AuthContext';
-
 export default function AdminDashboard() {
-    const { user } = useAuth();
     const [stats, setStats] = useState(null);
     const [pendingUsers, setPendingUsers] = useState([]);
     const [pendingProducts, setPendingProducts] = useState([]);
@@ -26,7 +23,7 @@ export default function AdminDashboard() {
             setPendingUsers(pendingUsersRes.data);
             setPendingProducts(pendingProductsRes.data);
             setAllUsers(allUsersRes.data);
-        } catch (e) {
+        } catch {
             toast.error('Failed to load admin data');
         } finally {
             setLoading(false);
@@ -42,7 +39,7 @@ export default function AdminDashboard() {
             await api.put(`/admin/approve/${id}`);
             toast.success('User approved! ✅');
             fetchData();
-        } catch (e) { toast.error('Approval failed'); }
+        } catch { toast.error('Approval failed'); }
     };
 
     const handlePromoteAdmin = async (id) => {
@@ -51,7 +48,7 @@ export default function AdminDashboard() {
             await api.put(`/admin/promote/${id}`);
             toast.success('User promoted to Admin! 👑');
             fetchData();
-        } catch (e) { toast.error('Promotion failed'); }
+        } catch { toast.error('Promotion failed'); }
     };
 
     const handleRemoveUser = async (id, name) => {
@@ -60,7 +57,7 @@ export default function AdminDashboard() {
             await api.delete(`/admin/users/${id}`);
             toast.success('User removed');
             fetchData();
-        } catch (e) { toast.error('Deletion failed'); }
+        } catch { toast.error('Deletion failed'); }
     };
 
     const handleApproveProduct = async (id) => {
@@ -68,7 +65,7 @@ export default function AdminDashboard() {
             await api.put(`/admin/products/${id}/approve`);
             toast.success('Product approved! 🛒');
             fetchData();
-        } catch (e) { toast.error('Approval failed'); }
+        } catch { toast.error('Approval failed'); }
     };
 
     const handleRejectProduct = async (id) => {
@@ -78,7 +75,7 @@ export default function AdminDashboard() {
             await api.put(`/admin/products/${id}/reject`, { reason });
             toast.success('Product rejected');
             fetchData();
-        } catch (e) { toast.error('Rejection failed'); }
+        } catch { toast.error('Rejection failed'); }
     };
 
     if (loading && !stats) return <div className="page-wrapper"><div className="spinner" /></div>;

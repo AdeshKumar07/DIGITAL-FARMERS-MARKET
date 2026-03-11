@@ -63,7 +63,7 @@ export default function ConsumerDashboard() {
             const [oRes, bRes] = await Promise.all([api.get('/orders/my'), api.get('/bids/my')]);
             setOrders(oRes.data);
             setMyBids(bRes.data);
-        } catch (e) {
+        } catch {
             toast.error('Failed to load data');
         } finally {
             setLoading(false);
