@@ -5,6 +5,15 @@ import toast from 'react-hot-toast';
 import api, { getServerUrl } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
+const CATEGORY_IMAGES = {
+    Vegetables: 'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=400&h=300&fit=crop&q=80',
+    Fruits: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&h=300&fit=crop&q=80',
+    Grains: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop&q=80',
+    Dairy: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400&h=300&fit=crop&q=80',
+    Spices: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&h=300&fit=crop&q=80',
+    Others: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop&q=80',
+};
+
 const STATUS_COLOR = {
     placed: 'badge-teal', confirmed: 'badge-teal', shipped: 'badge-orange',
     delivered: 'badge-green', cancelled: 'badge-red'
@@ -148,10 +157,7 @@ export default function ConsumerDashboard() {
                                                 <img src={`${getServerUrl()}${o.productId.image}`} alt=""
                                                     style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover' }} />
                                             ) : (
-                                                <div style={{
-                                                    width: 56, height: 56, borderRadius: 10, background: 'rgba(74,222,128,0.08)',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem'
-                                                }}>🌿</div>
+                                                <img src={CATEGORY_IMAGES[o.productId?.category] || CATEGORY_IMAGES.Others} alt="" style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover' }} />
                                             )}
                                             <div>
                                                 <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{o.productId?.name || 'Product unavailable'}</div>

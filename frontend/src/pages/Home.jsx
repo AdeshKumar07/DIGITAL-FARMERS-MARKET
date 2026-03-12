@@ -13,12 +13,12 @@ const features = [
 ];
 
 const categories = [
-    { name: 'Vegetables', emoji: '🥦', color: '#4ade80', bg: 'rgba(74,222,128,0.08)' },
-    { name: 'Fruits', emoji: '🍎', color: '#fb923c', bg: 'rgba(251,146,60,0.08)' },
-    { name: 'Grains', emoji: '🌾', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)' },
-    { name: 'Dairy', emoji: '🥛', color: '#e2e8f0', bg: 'rgba(226,232,240,0.06)' },
-    { name: 'Spices', emoji: '🌶️', color: '#f87171', bg: 'rgba(248,113,113,0.08)' },
-    { name: 'Others', emoji: '🌿', color: '#2dd4bf', bg: 'rgba(45,212,191,0.08)' },
+    { name: 'Vegetables', image: 'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=200&h=200&fit=crop&q=80', color: '#4ade80', bg: 'rgba(74,222,128,0.08)' },
+    { name: 'Fruits', image: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=200&h=200&fit=crop&q=80', color: '#fb923c', bg: 'rgba(251,146,60,0.08)' },
+    { name: 'Grains', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=200&h=200&fit=crop&q=80', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)' },
+    { name: 'Dairy', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=200&h=200&fit=crop&q=80', color: '#e2e8f0', bg: 'rgba(226,232,240,0.06)' },
+    { name: 'Spices', image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200&h=200&fit=crop&q=80', color: '#f87171', bg: 'rgba(248,113,113,0.08)' },
+    { name: 'Others', image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=200&h=200&fit=crop&q=80', color: '#2dd4bf', bg: 'rgba(45,212,191,0.08)' },
 ];
 
 const howItWorks = [
@@ -123,17 +123,20 @@ export default function Home() {
                 </motion.div>
                 <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}
                     style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-                    {categories.map(({ name, emoji, color, bg }) => (
+                    {categories.map(({ name, image, color, bg }) => (
                         <motion.div key={name} variants={item}>
                             <Link to={`/marketplace?category=${name}`} style={{ textDecoration: 'none' }}>
                                 <motion.div className="glass-card" whileHover={{ scale: 1.08, y: -6 }}
-                                    style={{ padding: '28px 32px', textAlign: 'center', cursor: 'pointer', minWidth: 120 }}>
+                                    style={{ padding: '20px 24px', textAlign: 'center', cursor: 'pointer', minWidth: 140 }}>
                                     <div style={{
-                                        width: 64, height: 64, borderRadius: 16, background: bg,
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '2rem', margin: '0 auto 14px',
-                                        border: `1px solid ${color}22`,
-                                    }}>{emoji}</div>
+                                        width: 80, height: 80, borderRadius: 18, overflow: 'hidden',
+                                        margin: '0 auto 14px',
+                                        border: `2px solid ${color}33`,
+                                        boxShadow: `0 4px 20px ${color}15`,
+                                    }}>
+                                        <img src={image} alt={name}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    </div>
                                     <div style={{ fontWeight: 700, fontSize: '0.92rem', color }}>{name}</div>
                                 </motion.div>
                             </Link>

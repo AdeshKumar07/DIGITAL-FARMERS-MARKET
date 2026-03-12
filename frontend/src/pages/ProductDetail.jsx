@@ -104,6 +104,15 @@ export default function ProductDetail() {
     const isExpired = product.biddingEndTime && new Date(product.biddingEndTime) < new Date();
     const minBid = highest?.amount ? Math.ceil(highest.amount * 1.05) : product.price;
 
+    const CATEGORY_IMAGES = {
+        Vegetables: 'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=600&h=500&fit=crop&q=80',
+        Fruits: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=600&h=500&fit=crop&q=80',
+        Grains: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&h=500&fit=crop&q=80',
+        Dairy: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=600&h=500&fit=crop&q=80',
+        Spices: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&h=500&fit=crop&q=80',
+        Others: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=500&fit=crop&q=80',
+    };
+
     return (
         <div className="page-wrapper">
             <div className="container" style={{ paddingTop: 32, paddingBottom: 80 }}>
@@ -119,10 +128,8 @@ export default function ProductDetail() {
                                 <img src={`${getServerUrl()}${product.image}`} alt={product.name}
                                     style={{ width: '100%', height: 420, objectFit: 'cover', display: 'block' }} />
                             ) : (
-                                <div style={{
-                                    width: '100%', height: 420, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    background: 'linear-gradient(135deg,rgba(34,197,94,0.08),rgba(45,212,191,0.04))', fontSize: '6rem'
-                                }}>🌿</div>
+                                <img src={CATEGORY_IMAGES[product.category] || CATEGORY_IMAGES.Others} alt={product.name}
+                                    style={{ width: '100%', height: 420, objectFit: 'cover', display: 'block' }} />
                             )}
                             {/* Bottom gradient overlay */}
                             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(transparent, rgba(7,13,10,0.6))' }} />

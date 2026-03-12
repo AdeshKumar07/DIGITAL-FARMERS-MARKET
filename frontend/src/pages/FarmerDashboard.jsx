@@ -5,6 +5,14 @@ import api, { getServerUrl } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
 const CATEGORIES = ['Vegetables', 'Fruits', 'Grains', 'Dairy', 'Spices', 'Others'];
+const CATEGORY_IMAGES = {
+    Vegetables: 'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=400&h=300&fit=crop&q=80',
+    Fruits: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&h=300&fit=crop&q=80',
+    Grains: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop&q=80',
+    Dairy: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400&h=300&fit=crop&q=80',
+    Spices: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&h=300&fit=crop&q=80',
+    Others: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop&q=80',
+};
 
 function AddProductModal({ onClose, onSuccess }) {
     const [form, setForm] = useState({
@@ -270,7 +278,7 @@ export default function FarmerDashboard() {
                                             <img src={`${getServerUrl()}${p.image}`} alt={p.name}
                                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         ) : (
-                                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', opacity: 0.3 }}>🌿</div>
+                                            <img src={CATEGORY_IMAGES[p.category] || CATEGORY_IMAGES.Others} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
                                         )}
                                         <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 4 }}>
                                             <span className={`badge ${p.type === 'bidding' ? 'badge-orange' : 'badge-green'}`} style={{ fontSize: '0.7rem' }}>
@@ -347,7 +355,7 @@ export default function FarmerDashboard() {
                                                 <img src={`${getServerUrl()}${o.productId.image}`} alt=""
                                                     style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover' }} />
                                             ) : (
-                                                <div style={{ width: 48, height: 48, borderRadius: 10, background: 'rgba(74,222,128,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>🌿</div>
+                                                <img src={CATEGORY_IMAGES[o.productId?.category] || CATEGORY_IMAGES.Others} alt="" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover' }} />
                                             )}
                                             <div>
                                                 <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{o.productId?.name || 'Product'}</div>

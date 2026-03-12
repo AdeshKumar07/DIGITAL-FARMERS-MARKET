@@ -4,7 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api, { getServerUrl } from '../api/axios';
 
 const CATEGORIES = ['All', 'Vegetables', 'Fruits', 'Grains', 'Dairy', 'Spices', 'Others'];
-const CATEGORY_EMOJI = { Vegetables: '🥦', Fruits: '🍎', Grains: '🌾', Dairy: '🥛', Spices: '🌶️', Others: '🌿', All: '🏪' };
+const CATEGORY_IMAGES = {
+    Vegetables: 'https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?w=400&h=400&fit=crop&q=80',
+    Fruits: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=400&h=400&fit=crop&q=80',
+    Grains: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=400&fit=crop&q=80',
+    Dairy: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400&h=400&fit=crop&q=80',
+    Spices: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&h=400&fit=crop&q=80',
+    Others: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=400&fit=crop&q=80',
+    All: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400&h=400&fit=crop&q=80',
+};
 
 function SkeletonCard() {
     return (
@@ -44,10 +52,11 @@ function ProductCard({ product }) {
                     />
                 ) : (
                     <div style={{
-                        width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: 'linear-gradient(135deg,rgba(34,197,94,0.08),rgba(45,212,191,0.04))', fontSize: '3.5rem'
+                        width: '100%', height: '100%', overflow: 'hidden',
+                        background: 'linear-gradient(135deg,rgba(34,197,94,0.08),rgba(45,212,191,0.04))'
                     }}>
-                        {CATEGORY_EMOJI[product.category] || '🌿'}
+                        <img src={CATEGORY_IMAGES[product.category] || CATEGORY_IMAGES.Others} alt={product.category}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
                     </div>
                 )}
                 {/* Gradient overlay at bottom of image */}
@@ -181,7 +190,7 @@ export default function Marketplace() {
                                 color: filters.category === cat ? '#000' : '#9ca3af',
                                 boxShadow: filters.category === cat ? '0 4px 20px rgba(34,197,94,0.3)' : 'none',
                             }}>
-                            {CATEGORY_EMOJI[cat]} {cat}
+                            {CATEGORY_IMAGES[cat] && <img src={CATEGORY_IMAGES[cat]} alt={cat} style={{ width: 18, height: 18, borderRadius: 4, objectFit: 'cover', display: 'inline-block', verticalAlign: 'middle', marginRight: 4 }} />} {cat}
                         </motion.button>
                     ))}
                 </div>
