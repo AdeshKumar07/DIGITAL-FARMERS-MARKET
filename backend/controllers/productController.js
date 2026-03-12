@@ -1,4 +1,17 @@
 const Product = require('../models/Product');
+const { buildProductImageUrl } = require('../utils/migrateProductImages');
+
+const serializeProduct = (product) => {
+    const serialized = product.toObject ? product.toObject() : { ...product };
+
+    if (serialized.imageContentType) {
+        serialized.image = buildProductImageUrl(serialized._id);
+    }
+
+    delete serialized.imageData;
+
+    return serialized;
+};
 
 // @desc  Create product
 // @route POST /api/products
@@ -30,9 +43,7 @@ const createProduct = async (req, res, next) => {
             }
         }
 
-        const image = req.file ? `/uploads/${req.file.filename}` : '';
-
-        const product = await Product.create({
+        const product = new Product({
             name,
             description,
             price,
@@ -42,12 +53,19 @@ const createProduct = async (req, res, next) => {
             unit,
             type,
             biddingEndTime: type === 'bidding' ? biddingEndTime : undefined,
-            image,
             farmerId: req.user._id,
             farmerName: req.user.name,
         });
 
-        res.status(201).json(product);
+        if (req.file) {
+            product.imageContentType = req.file.mimetype;
+            product.imageData = req.file.buffer;
+            product.image = buildProductImageUrl(product._id);
+        }
+
+        await product.save();
+
+        res.status(201).json(serializeProduct(product));
     } catch (err) {
         next(err);
     }
@@ -75,7 +93,7 @@ const getProducts = async (req, res, next) => {
             .populate('farmerId', 'name email location')
             .sort({ createdAt: -1 });
 
-        res.json(products);
+        res.json(products.map(serializeProduct));
     } catch (err) {
         next(err);
     }
@@ -90,7 +108,7 @@ const getProductById = async (req, res, next) => {
             'name email location'
         );
         if (!product) return res.status(404).json({ message: 'Product not found' });
-        res.json(product);
+        res.json(serializeProduct(product));
     } catch (err) {
         next(err);
     }
@@ -102,7 +120,26 @@ const getMyProducts = async (req, res, next) => {
     try {
         // Farmer sees all their products status
         const products = await Product.find({ farmerId: req.user._id }).sort({ createdAt: -1 });
-        res.json(products);
+        res.json(products.map(serializeProduct));
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+// @desc  Get a product image stored in MongoDB
+// @route GET /api/products/:id/image
+const getProductImage = async (req, res, next) => {
+    try {
+        const product = await Product.findById(req.params.id).select('+imageData imageContentType image');
+
+        if (!product || !product.imageData || !product.imageContentType) {
+            return res.status(404).json({ message: 'Product image not found' });
+        }
+
+        res.set('Content-Type', product.imageContentType);
+        res.set('Cache-Control', 'public, max-age=86400');
+        res.send(product.imageData);
     } catch (err) {
         next(err);
     }
@@ -131,7 +168,7 @@ const updateProduct = async (req, res, next) => {
             new: true,
             runValidators: true,
         });
-        res.json(updated);
+        res.json(serializeProduct(updated));
     } catch (err) {
         next(err);
     }
@@ -155,4 +192,5 @@ const deleteProduct = async (req, res, next) => {
     }
 };
 
-module.exports = { createProduct, getProducts, getProductById, getMyProducts, updateProduct, deleteProduct };
+module.exports = { createProduct, getProducts, getProductById, getMyProducts, getProductImage, updateProduct, deleteProduct };
+

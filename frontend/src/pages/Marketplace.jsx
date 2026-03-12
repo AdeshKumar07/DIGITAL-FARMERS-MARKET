@@ -48,6 +48,10 @@ function ProductCard({ product }) {
                     <img
                         src={`${getServerUrl()}${product.image}`}
                         alt={product.name}
+                        onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = CATEGORY_IMAGES[product.category] || CATEGORY_IMAGES.Others;
+                        }}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                 ) : (

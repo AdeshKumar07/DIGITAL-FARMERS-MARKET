@@ -126,6 +126,10 @@ export default function ProductDetail() {
                         <div className="img-hover-zoom" style={{ borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', position: 'relative' }}>
                             {product.image ? (
                                 <img src={`${getServerUrl()}${product.image}`} alt={product.name}
+                                    onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = CATEGORY_IMAGES[product.category] || CATEGORY_IMAGES.Others;
+                                    }}
                                     style={{ width: '100%', height: 420, objectFit: 'cover', display: 'block' }} />
                             ) : (
                                 <img src={CATEGORY_IMAGES[product.category] || CATEGORY_IMAGES.Others} alt={product.name}

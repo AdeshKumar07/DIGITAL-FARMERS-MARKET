@@ -276,6 +276,10 @@ export default function FarmerDashboard() {
                                     <div style={{ height: 140, position: 'relative', background: 'rgba(255,255,255,0.02)' }}>
                                         {p.image ? (
                                             <img src={`${getServerUrl()}${p.image}`} alt={p.name}
+                                                onError={(e) => {
+                                                    e.currentTarget.onerror = null;
+                                                    e.currentTarget.src = CATEGORY_IMAGES[p.category] || CATEGORY_IMAGES.Others;
+                                                }}
                                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                         ) : (
                                             <img src={CATEGORY_IMAGES[p.category] || CATEGORY_IMAGES.Others} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
@@ -353,6 +357,10 @@ export default function FarmerDashboard() {
                                         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flex: 1, minWidth: 200 }}>
                                             {o.productId?.image ? (
                                                 <img src={`${getServerUrl()}${o.productId.image}`} alt=""
+                                                    onError={(e) => {
+                                                        e.currentTarget.onerror = null;
+                                                        e.currentTarget.src = CATEGORY_IMAGES[o.productId?.category] || CATEGORY_IMAGES.Others;
+                                                    }}
                                                     style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover' }} />
                                             ) : (
                                                 <img src={CATEGORY_IMAGES[o.productId?.category] || CATEGORY_IMAGES.Others} alt="" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover' }} />

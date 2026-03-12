@@ -155,6 +155,10 @@ export default function ConsumerDashboard() {
                                         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                                             {o.productId?.image ? (
                                                 <img src={`${getServerUrl()}${o.productId.image}`} alt=""
+                                                    onError={(e) => {
+                                                        e.currentTarget.onerror = null;
+                                                        e.currentTarget.src = CATEGORY_IMAGES[o.productId?.category] || CATEGORY_IMAGES.Others;
+                                                    }}
                                                     style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover' }} />
                                             ) : (
                                                 <img src={CATEGORY_IMAGES[o.productId?.category] || CATEGORY_IMAGES.Others} alt="" style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover' }} />
