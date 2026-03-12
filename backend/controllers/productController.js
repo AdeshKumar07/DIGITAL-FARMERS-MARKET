@@ -7,6 +7,29 @@ const createProduct = async (req, res, next) => {
         const { name, description, price, category, location, quantity, unit, type, biddingEndTime } =
             req.body;
 
+        // Basic validation
+        if (!name || !description || !price || !category || !location || !quantity) {
+            return res.status(400).json({ message: 'All required fields must be provided' });
+        }
+
+        if (Number(price) <= 0) {
+            return res.status(400).json({ message: 'Price must be greater than zero' });
+        }
+
+        if (Number(quantity) <= 0) {
+            return res.status(400).json({ message: 'Quantity must be greater than zero' });
+        }
+
+        // Validate bidding end time is in the future
+        if (type === 'bidding') {
+            if (!biddingEndTime) {
+                return res.status(400).json({ message: 'Bidding end time is required for bidding products' });
+            }
+            if (new Date(biddingEndTime) <= new Date()) {
+                return res.status(400).json({ message: 'Bidding end time must be in the future' });
+            }
+        }
+
         const image = req.file ? `/uploads/${req.file.filename}` : '';
 
         const product = await Product.create({

@@ -83,6 +83,10 @@ const changeUserRole = async (req, res, next) => {
 // @route DELETE /api/admin/users/:id
 const deleteUser = async (req, res, next) => {
     try {
+        if (req.params.id === req.user._id.toString()) {
+            return res.status(403).json({ message: 'Cannot delete your own account' });
+        }
+
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ message: 'User not found' });
         if (user.role === 'admin') return res.status(403).json({ message: 'Cannot remove another admin' });

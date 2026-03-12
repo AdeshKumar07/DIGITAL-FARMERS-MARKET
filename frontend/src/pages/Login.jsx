@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -9,13 +9,29 @@ export default function Login() {
     const { login, loading } = useAuth();
     const navigate = useNavigate();
     const [form, setForm] = useState({ email: '', password: '' });
+    const emailRef = useRef(null);
+    const passwordRef = useRef(null);
+
+    // Clear any browser-autofilled values on mount
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (emailRef.current) emailRef.current.value = '';
+            if (passwordRef.current) passwordRef.current.value = '';
+            setForm({ email: '', password: '' });
+        }, 50);
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const email = form.email.trim().toLowerCase();
+        if (!email || !form.password) {
+            return toast.error('Please enter email and password');
+        }
         try {
-            const user = await login(form.email, form.password);
+            const user = await login(email, form.password);
             toast.success(`Welcome back, ${user.name}! 🌾`);
             if (user.role === 'farmer') navigate('/farmer');
             else if (user.role === 'admin') navigate('/admin');
@@ -48,16 +64,18 @@ export default function Login() {
                     <p style={{ color: '#6b7280', marginTop: 8, fontSize: '0.9rem' }}>Sign in to your FarmConnect account</p>
                 </div>
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <form onSubmit={handleSubmit} autoComplete="off" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                     <div>
                         <label style={{ display: 'block', fontSize: '0.82rem', color: '#9ca3af', marginBottom: 8, fontWeight: 600 }}>Email</label>
                         <input className="input-field" type="email" name="email" placeholder="you@example.com"
-                            value={form.email} onChange={handleChange} required />
+                            value={form.email} onChange={handleChange} required
+                            ref={emailRef} autoComplete="off" />
                     </div>
                     <div>
                         <label style={{ display: 'block', fontSize: '0.82rem', color: '#9ca3af', marginBottom: 8, fontWeight: 600 }}>Password</label>
                         <input className="input-field" type="password" name="password" placeholder="••••••••"
-                            value={form.password} onChange={handleChange} required />
+                            value={form.password} onChange={handleChange} required
+                            ref={passwordRef} autoComplete="new-password" />
                     </div>
 
                     <motion.button

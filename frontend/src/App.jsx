@@ -22,14 +22,23 @@ const ProtectedRoute = ({ children, roles }) => {
   return children;
 };
 
+const GuestRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (user) {
+    const path = user.role === 'farmer' ? '/farmer' : user.role === 'admin' ? '/admin' : '/consumer';
+    return <Navigate to={path} replace />;
+  }
+  return children;
+};
+
 function AppRoutes() {
   return (
     <>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route

@@ -15,9 +15,16 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (form.password.length < 8) {
+            return toast.error('Password must be at least 8 characters');
+        }
+        if (!form.name.trim()) {
+            return toast.error('Please enter your full name');
+        }
         setLoading(true);
         try {
-            const data = await register(form);
+            const payload = { ...form, email: form.email.trim().toLowerCase(), name: form.name.trim(), location: form.location.trim() };
+            const data = await register(payload);
             toast.success(data.message || 'Registered! Awaiting admin approval.');
             navigate('/login');
         } catch (err) {
@@ -48,18 +55,18 @@ export default function Register() {
                     <p style={{ color: '#6b7280', marginTop: 8, fontSize: '0.9rem' }}>Create your account to get started</p>
                 </div>
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <form onSubmit={handleSubmit} autoComplete="off" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div>
                         <label style={{ display: 'block', fontSize: '0.82rem', color: '#9ca3af', marginBottom: 8, fontWeight: 600 }}>Full Name</label>
-                        <input className="input-field" name="name" placeholder="Ramesh Kumar" value={form.name} onChange={handleChange} required />
+                        <input className="input-field" name="name" placeholder="Ramesh Kumar" value={form.name} onChange={handleChange} required autoComplete="off" />
                     </div>
                     <div>
                         <label style={{ display: 'block', fontSize: '0.82rem', color: '#9ca3af', marginBottom: 8, fontWeight: 600 }}>Email</label>
-                        <input className="input-field" type="email" name="email" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+                        <input className="input-field" type="email" name="email" placeholder="you@example.com" value={form.email} onChange={handleChange} required autoComplete="off" />
                     </div>
                     <div>
                         <label style={{ display: 'block', fontSize: '0.82rem', color: '#9ca3af', marginBottom: 8, fontWeight: 600 }}>Password</label>
-                        <input className="input-field" type="password" name="password" placeholder="Min. 6 characters" value={form.password} onChange={handleChange} required />
+                        <input className="input-field" type="password" name="password" placeholder="Min. 8 characters" value={form.password} onChange={handleChange} required minLength={8} autoComplete="new-password" />
                     </div>
 
                     {/* Role toggle */}

@@ -77,20 +77,17 @@ export default function ProductDetail() {
     const buyNow = async () => {
         if (!user) return toast.error('Please login first');
         if (user.role !== 'consumer') return toast.error('Only consumers can buy');
-        if (!address) return toast.error('Please enter delivery address');
+        if (!address.trim()) return toast.error('Please enter delivery address');
         if (qty < 1) return toast.error('Quantity must be at least 1');
+        if (qty > product.quantity) return toast.error(`Only ${product.quantity} ${product.unit || 'kg'} available`);
+        if (product.quantity <= 0) return toast.error('This product is currently out of stock');
         setSubmitting(true);
         try {
-            const { data } = await api.post('/orders/direct', { productId: id, quantity: qty, shippingAddress: address });
+            const { data } = await api.post('/orders/direct', { productId: id, quantity: qty, shippingAddress: address.trim() });
             toast.success(data.message || 'Order placed successfully!');
             navigate('/consumer');
         } catch (e) {
-            const msg = e.response?.data?.message || 'Order failed';
-            if (e.response?.data?.available === false) {
-                toast.error(msg);
-            } else {
-                toast.error(msg);
-            }
+            toast.error(e.response?.data?.message || 'Order failed');
         } finally {
             setSubmitting(false);
         }
@@ -211,7 +208,11 @@ export default function ProductDetail() {
                                             ⌛ {isExpired ? 'Bidding ended on' : 'Ends on'}: {new Date(product.biddingEndTime).toLocaleString('en-IN')}
                                         </div>
                                     )}
-                                    {!isExpired && (
+                                    {isExpired ? (
+                                        <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: 12, textAlign: 'center' }}>
+                                            <p style={{ color: '#f87171', fontWeight: 600 }}>Bidding has ended for this product</p>
+                                        </div>
+                                    ) : (
                                         <>
                                             <p style={{ fontSize: '0.8rem', color: '#6b7280', marginBottom: 10 }}>Minimum bid: ₹{minBid.toLocaleString('en-IN')}</p>
                                             <div style={{ display: 'flex', gap: 10 }}>
@@ -232,12 +233,22 @@ export default function ProductDetail() {
                                         <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>Price per {product.unit || 'kg'}</div>
                                         <div style={{ fontSize: '2rem', fontWeight: 800, color: '#4ade80' }}>₹{product.price.toLocaleString('en-IN')}</div>
                                     </div>
+                                    {product.quantity <= 0 ? (
+                                        <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: 12, textAlign: 'center' }}>
+                                            <p style={{ color: '#f87171', fontWeight: 600, fontSize: '1rem' }}>Out of Stock</p>
+                                            <p style={{ color: '#6b7280', fontSize: '0.82rem', marginTop: 4 }}>This product is currently unavailable</p>
+                                        </div>
+                                    ) : (
+                                    <>
                                     <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
                                         <div style={{ flex: 1 }}>
                                             <label style={{ fontSize: '0.8rem', color: '#6b7280', display: 'block', marginBottom: 6 }}>Quantity ({product.unit || 'kg'})</label>
                                             <input className="input-field" type="number" min="1" max={product.quantity}
-                                                value={qty} onChange={e => setQty(Number(e.target.value))} />
+                                                value={qty} onChange={e => setQty(Math.min(Number(e.target.value), product.quantity))} />
                                         </div>
+                                    </div>
+                                    <div style={{ fontSize: '0.78rem', color: '#6b7280', marginBottom: 12 }}>
+                                        Available: {product.quantity} {product.unit || 'kg'}
                                     </div>
                                     <div style={{ marginBottom: 12 }}>
                                         <label style={{ fontSize: '0.8rem', color: '#6b7280', display: 'block', marginBottom: 6 }}>Delivery Address</label>
@@ -253,6 +264,8 @@ export default function ProductDetail() {
                                         onClick={buyNow} disabled={submitting}>
                                         {submitting ? 'Placing Order...' : 'Buy Now →'}
                                     </motion.button>
+                                    </>
+                                    )}
                                 </>
                             )}
                         </div>

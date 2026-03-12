@@ -18,6 +18,12 @@ function AddProductModal({ onClose, onSuccess }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (form.type === 'bidding' && form.biddingEndTime) {
+            if (new Date(form.biddingEndTime) <= new Date()) {
+                toast.error('Bidding end time must be in the future');
+                return;
+            }
+        }
         setLoading(true);
         const fd = new FormData();
         Object.entries(form).forEach(([k, v]) => { if (v) fd.append(k, v); });
@@ -147,8 +153,12 @@ export default function FarmerDashboard() {
             const bidding = pRes.data.filter(p => p.type === 'bidding');
             const bidsData = {};
             await Promise.all(bidding.map(async p => {
-                const { data } = await api.get(`/bids/${p._id}/highest`);
-                bidsData[p._id] = data;
+                try {
+                    const { data } = await api.get(`/bids/${p._id}/highest`);
+                    bidsData[p._id] = data;
+                } catch {
+                    bidsData[p._id] = { amount: null };
+                }
             }));
             setBidsMap(bidsData);
         } catch {

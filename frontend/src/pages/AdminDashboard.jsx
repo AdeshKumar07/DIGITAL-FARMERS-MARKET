@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import api, { getServerUrl } from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 export default function AdminDashboard() {
+    const { user: currentUser } = useAuth();
     const [stats, setStats] = useState(null);
     const [pendingUsers, setPendingUsers] = useState([]);
     const [pendingProducts, setPendingProducts] = useState([]);
@@ -178,7 +180,7 @@ export default function AdminDashboard() {
                                                 {u.role === 'farmer' && (
                                                     <button className="btn-secondary" onClick={() => handlePromoteAdmin(u._id)} style={{ padding: '8px 16px' }}>Make Admin</button>
                                                 )}
-                                                {u.email !== 'adeshak0707@gmail.com' && (
+                                                {u._id !== currentUser?._id && (
                                                     <button className="btn-danger" onClick={() => handleRemoveUser(u._id, u.name)}>Remove</button>
                                                 )}
                                             </div>

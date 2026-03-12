@@ -11,12 +11,33 @@ const register = async (req, res, next) => {
     try {
         let { name, email, password, role, location } = req.body;
 
+        // Input validation
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'Name, email, and password are required' });
+        }
+
+        name = String(name).trim();
+        email = String(email).trim().toLowerCase();
+        location = location ? String(location).trim() : '';
+
+        if (name.length < 2 || name.length > 100) {
+            return res.status(400).json({ message: 'Name must be between 2 and 100 characters' });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
+
         // default role to 'consumer' if not provided
         role = role ? String(role).toLowerCase() : 'consumer';
 
         // disallow registering as admin via public register endpoint
         if (role === 'admin') {
             return res.status(403).json({ message: 'Admin accounts must be created by an administrator' });
+        }
+
+        if (!['consumer', 'farmer'].includes(role)) {
+            return res.status(400).json({ message: 'Invalid role. Must be consumer or farmer' });
         }
 
         const exists = await User.findOne({ email });
@@ -47,7 +68,13 @@ const register = async (req, res, next) => {
 // @route POST /api/auth/login
 const login = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
+        email = String(email).trim().toLowerCase();
 
         const user = await User.findOne({ email });
         if (!user) return res.status(401).json({ message: 'Invalid credentials' });

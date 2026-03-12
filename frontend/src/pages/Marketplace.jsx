@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api, { getServerUrl } from '../api/axios';
@@ -22,6 +22,7 @@ function SkeletonCard() {
 function ProductCard({ product }) {
     const isBidding = product.type === 'bidding';
     const isExpired = product.biddingEndTime && new Date(product.biddingEndTime) < new Date();
+    const outOfStock = product.quantity <= 0 && !isBidding;
 
     return (
         <motion.div
@@ -31,7 +32,7 @@ function ProductCard({ product }) {
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3 }}
             className="glass-card"
-            style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+            style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', opacity: outOfStock ? 0.6 : 1 }}
         >
             {/* Image */}
             <div className="img-hover-zoom" style={{ position: 'relative', height: 200 }}>
@@ -61,6 +62,11 @@ function ProductCard({ product }) {
                         <span className="badge badge-red">Ended</span>
                     </div>
                 )}
+                {outOfStock && (
+                    <div style={{ position: 'absolute', top: 12, right: 12 }}>
+                        <span className="badge badge-red">Out of Stock</span>
+                    </div>
+                )}
                 {/* Price floating tag on image */}
                 <div style={{ position: 'absolute', bottom: 12, right: 14 }}>
                     <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#4ade80', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
@@ -82,10 +88,11 @@ function ProductCard({ product }) {
                     <Link to={`/product/${product._id}`} style={{ textDecoration: 'none' }}>
                         <motion.button
                             className={isBidding ? 'btn-secondary' : 'btn-primary'}
-                            style={{ width: '100%', padding: '10px 18px', fontSize: '0.88rem', borderRadius: 12 }}
+                            style={{ width: '100%', padding: '10px 18px', fontSize: '0.88rem', borderRadius: 12, ...(outOfStock ? { opacity: 0.5, pointerEvents: 'none' } : {}) }}
                             whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                            disabled={outOfStock}
                         >
-                            {isBidding ? 'Place Bid →' : 'Buy Now →'}
+                            {outOfStock ? 'Out of Stock' : isBidding ? (isExpired ? 'View Details →' : 'Place Bid →') : 'Buy Now →'}
                         </motion.button>
                     </Link>
                 </div>
@@ -126,7 +133,15 @@ export default function Marketplace() {
         }
     };
 
-    useEffect(() => { fetchProducts(); }, [filters]);
+    // Debounce text-based filters (search, location, price)
+    const debounceRef = useRef(null);
+    useEffect(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+            fetchProducts();
+        }, 300);
+        return () => clearTimeout(debounceRef.current);
+    }, [filters]);
 
     const setFilter = (key, value) => setFilters(f => ({ ...f, [key]: value }));
 
